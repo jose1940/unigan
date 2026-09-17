@@ -2,17 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Inventario extends Model
 {
-    use HasFactory;
-
     protected $table = 'inventarios';
 
-    protected $fillable = [
-        'nombre',
-        'cantidad',
-    ];
+    protected $fillable = ['nombre', 'cantidad', 'fecha_compra', 'fecha_vencimiento'];
 }

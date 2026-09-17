@@ -21,11 +21,7 @@
 <img src="{{ asset('images/WhatsApp Image 2026-05-08 at 2.42.29 PM.jpeg') }}" width="800">
  <br><br>
 
-<p>
-   Unigan es un sistema web para gestionar el inventario ganadero,
-     permitiendo registrar y organizar información sobre animales,
-     para facilitar su control y administración. 🐄📊
-</p>
+
 
 <hr>
 <center>

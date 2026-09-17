@@ -1,34 +1,27 @@
 <?php
-// database/seeders/RolesAndPermissionsSeeder.php
 
-namespace Database\Seeders; 
+namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
-
 class RolesAndPermissionsSeeder extends Seeder
 {
     public function run(): void
     {
-        // Limpiar caché de permisos
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         // ── PERMISOS ──────────────────────────────────────────────
         $permisos = [
             // Animales
             'ver animales', 'crear animales', 'editar animales', 'eliminar animales',
-
             // Inventario
             'ver inventario', 'gestionar inventario',
-
-            // Salud / Veterinaria
-            'ver registros medicos', 'crear registros medicos', 'editar registros medicos',
-
+            // Registros médicos
+            'ver registros medicos', 'crear registros medicos', 'editar registros medicos', 'eliminar registros medicos',
             // Usuarios
             'ver usuarios', 'gestionar usuarios',
-
             // Reportes
             'ver reportes', 'exportar reportes',
         ];
@@ -39,38 +32,34 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // ── ROLES ─────────────────────────────────────────────────
 
-        // 👑 Propietario: acceso total
-        $propietario = Role::firstOrCreate(['name' => 'propietario']);
-        $propietario->givePermissionTo(Permission::all());
-
-        // 🛠️ Administrador: todo excepto gestionar usuarios
+    
+     $superAdmin = Role::firstOrCreate(['name' => 'super admin']);
+     $superAdmin->givePermissionTo(Permission::all());
+       
         $admin = Role::firstOrCreate(['name' => 'administrador']);
-        $admin->givePermissionTo([
+        $admin->syncPermissions([
             'ver animales', 'crear animales', 'editar animales', 'eliminar animales',
             'ver inventario', 'gestionar inventario',
-            'ver registros medicos', 'crear registros medicos', 'editar registros medicos',
+            'ver registros medicos',
             'ver reportes', 'exportar reportes',
         ]);
 
-        // 👨‍⚕️ Veterinario: enfocado en salud animal
         $veterinario = Role::firstOrCreate(['name' => 'veterinario']);
-        $veterinario->givePermissionTo([
-            'ver animales', 'editar animales',
-            'ver registros medicos', 'crear registros medicos', 'editar registros medicos',
-            'ver inventario',
-        ]);
+        $veterinario->syncPermissions([
+              'ver animales',
+    'ver registros medicos', 'crear registros medicos', 'editar registros medicos', 'eliminar registros medicos',
+]);
+        
 
-        // 👷 Trabajador: operaciones básicas
         $trabajador = Role::firstOrCreate(['name' => 'trabajador']);
-        $trabajador->givePermissionTo([
-            'ver animales', 'crear animales', 'editar animales',
+        $trabajador->syncPermissions([
+            'ver animales',
             'ver inventario',
+            'ver registros medicos',
+            'ver reportes',
         ]);
 
-        // 👁️ Invitado: solo lectura
-        $invitado = Role::firstOrCreate(['name' => 'invitado']);
-        $invitado->givePermissionTo([
-            'ver animales', 'ver inventario', 'ver registros medicos',
-        ]);
+    
+        
     }
 }

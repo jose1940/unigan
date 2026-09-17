@@ -11,9 +11,5 @@ class Animal extends Model
 
     protected $table = 'animals';
 
-    protected $fillable = [
-        'numero_arete',
-        'nombre',
-        'especie',
-    ];
+   protected $fillable = ['numero_arete', 'nombre', 'especie', 'peso', 'fecha_nacimiento','fecha_compra'];
 }

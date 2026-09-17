@@ -83,8 +83,8 @@ class UsuarioController extends Controller
 
     public function destroy(string $id)
     {
-        if (!auth()->user()->hasRole('propietario')) {
-            abort(403, 'Solo el propietario puede eliminar usuarios.');
+        if (!auth()->user()->hasRole('super_admin')) {
+            abort(403, 'Solo el super_admin puede eliminar usuarios.');
         }
         User::findOrFail($id)->delete();
 

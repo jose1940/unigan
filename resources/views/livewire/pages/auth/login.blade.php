@@ -82,15 +82,12 @@ $login = function () {
                 <span style="font-size:28px;">🩺</span>
                 <span style="color:#e8f5e9; font-size:11px; font-weight:600; line-height:1.3;">Registro y salud animal</span>
             </div>
-            <div style="background:#ffffff10; border:1px solid #ffffff20; border-radius:12px; padding:16px 10px; display:flex; flex-direction:column; align-items:center; gap:6px; text-align:center;">
-                <span style="font-size:28px;">👥</span>
-                <span style="color:#e8f5e9; font-size:11px; font-weight:600; line-height:1.3;">Gestión de roles</span>
-            </div>
+          
             <div style="background:#ffffff10; border:1px solid #ffffff20; border-radius:12px; padding:16px 10px; display:flex; flex-direction:column; align-items:center; gap:6px; text-align:center;">
                 <span style="font-size:28px;">📊</span>
                 <span style="color:#e8f5e9; font-size:11px; font-weight:600; line-height:1.3;">Reportes y estadísticas</span>
             </div>
-            <div style="background:#4caf5022; border:1px solid #4caf5055; border-radius:12px; padding:16px 10px; display:flex; flex-direction:column; align-items:center; gap:6px; text-align:center; grid-column:span 2;">
+            <div style="background:#4caf5022; border:1px solid #4caf5055; border-radius:12px; padding:16px 10px; display:flex; flex-direction:column; align-items:center; gap:6px; text-align:center;">
                 <span style="font-size:28px;">🌾</span>
                 <span style="color:#a5d6a7; font-size:11px; font-weight:600; line-height:1.3;">Administración completa de la finca</span>
             </div>

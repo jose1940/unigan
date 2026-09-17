@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Animal; 
+use App\Models\Animal;
 use Illuminate\Http\Request;
 
 class AnimalController extends Controller
@@ -13,37 +13,38 @@ class AnimalController extends Controller
             abort(403, 'No tienes permiso para ver los animales.');
         }
 
-        // Obtener los animales registrados para pasar a la vista
         $animales = Animal::all();
-
         return view('animales.index', compact('animales'));
     }
 
     public function create()
     {
         if (!auth()->user()->can('crear animales')) {
-            abort(403, 'No tienes permiso para agregar animales.');
+            abort(403);
         }
-
         return view('animales.create');
     }
 
     public function store(Request $request)
     {
         if (!auth()->user()->can('crear animales')) {
-            abort(403, 'No tienes permiso para guardar animales.');
+            abort(403);
         }
 
-        // 2. Validar que la información requerida llegue desde el formulario
         $request->validate([
-            'numero_arete' => 'required',
+            'numero_arete'     => 'nullable|string',
+            'peso'             => 'nullable|numeric|min:0',
+            'fecha_nacimiento' => 'nullable|date|before_or_equal:today',
+            'fecha_compra'     => 'nullable|date',
         ]);
 
-        // 3. Insertar el nuevo registro en la base de datos
         Animal::create([
-            'numero_arete' => $request->numero_arete,
-            'nombre'       => $request->nombre,
-            'especie'      => $request->especie,
+            'numero_arete'     => $request->numero_arete,
+            'nombre'           => $request->nombre,
+            'especie'          => $request->especie,
+            'peso'             => $request->peso,
+            'fecha_nacimiento' => $request->fecha_nacimiento,
+            'fecha_compra'     => $request->fecha_compra,
         ]);
 
         return redirect()->route('animales.index')
@@ -52,33 +53,37 @@ class AnimalController extends Controller
 
     public function show(string $id)
     {
-        if (!auth()->user()->can('ver animales')) {
-            abort(403, 'No tienes permiso para ver este animal.');
-        }
-
+        if (!auth()->user()->can('ver animales')) abort(403);
         return view('animales.show');
     }
 
     public function edit(string $id)
     {
-        if (!auth()->user()->can('editar animales')) {
-            abort(403, 'No tienes permiso para editar animales.');
-        }
-
+        if (!auth()->user()->can('editar animales')) abort(403);
         return view('animales.edit');
     }
 
     public function update(Request $request, string $id)
     {
         if (!auth()->user()->can('editar animales')) {
-            abort(403, 'No tienes permiso para actualizar animales.');
+            abort(403);
         }
+
+        $request->validate([
+            'numero_arete'     => 'nullable|string',
+            'peso'             => 'nullable|numeric|min:0',
+            'fecha_nacimiento' => 'nullable|date|before_or_equal:today',
+            'fecha_compra'     => 'nullable|date',
+        ]);
 
         $animal = Animal::findOrFail($id);
         $animal->update([
-            'numero_arete' => $request->numero_arete,
-            'nombre'       => $request->nombre,
-            'especie'      => $request->especie,
+            'numero_arete'     => $request->numero_arete,
+            'nombre'           => $request->nombre,
+            'especie'          => $request->especie,
+            'peso'             => $request->peso,
+            'fecha_nacimiento' => $request->fecha_nacimiento,
+            'fecha_compra'     => $request->fecha_compra,
         ]);
 
         return redirect()->route('animales.index')
@@ -87,9 +92,7 @@ class AnimalController extends Controller
 
     public function destroy(string $id)
     {
-        if (!auth()->user()->can('eliminar animales')) {
-            abort(403, 'No tienes permiso para eliminar animales.');
-        }
+        if (!auth()->user()->can('eliminar animales')) abort(403);
 
         $animal = Animal::findOrFail($id);
         $animal->delete();

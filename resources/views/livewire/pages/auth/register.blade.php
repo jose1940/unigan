@@ -108,15 +108,12 @@ new class extends Component {
                 <span style="font-size:26px;">🩺</span>
                 <span style="color:#e8f5e9; font-size:11px; font-weight:600; line-height:1.3;">Registro y salud animal</span>
             </div>
-            <div style="background:#ffffff10; border:1px solid #ffffff20; border-radius:12px; padding:14px 10px; display:flex; flex-direction:column; align-items:center; gap:6px; text-align:center;">
-                <span style="font-size:26px;">👥</span>
-                <span style="color:#e8f5e9; font-size:11px; font-weight:600; line-height:1.3;">Gestión de roles</span>
-            </div>
+            
             <div style="background:#ffffff10; border:1px solid #ffffff20; border-radius:12px; padding:14px 10px; display:flex; flex-direction:column; align-items:center; gap:6px; text-align:center;">
                 <span style="font-size:26px;">📊</span>
                 <span style="color:#e8f5e9; font-size:11px; font-weight:600; line-height:1.3;">Reportes y estadísticas</span>
             </div>
-            <div style="background:#4caf5022; border:1px solid #4caf5055; border-radius:12px; padding:14px 10px; display:flex; flex-direction:column; align-items:center; gap:6px; text-align:center; grid-column:span 2;">
+            <div style="background:#4caf5022; border:1px solid #4caf5055; border-radius:12px; padding:14px 10px; display:flex; flex-direction:column; align-items:center; gap:6px; text-align:center;">
                 <span style="font-size:26px;">🌾</span>
                 <span style="color:#a5d6a7; font-size:11px; font-weight:600; line-height:1.3;">Administración completa de la finca</span>
             </div>
@@ -133,9 +130,7 @@ new class extends Component {
                 <p style="font-size:13px; color:#6b7280; margin:0;">Únete al sistema de gestión ganadera</p>
             </div>
 
-          <form method="POST" wire:submit.prevent="register">
-    @csrf
-
+          <form wire:submit.prevent="register">
                 {{-- Nombre --}}
                 <div style="margin-bottom:1rem;">
                     <label style="font-size:12px; color:#9ca3af; display:block; margin-bottom:5px; font-weight:500;">👤 Nombre completo</label>
@@ -177,7 +172,7 @@ new class extends Component {
                     <label style="font-size:12px; color:#9ca3af; display:block; margin-bottom:5px; font-weight:500;">🎭 Rol en la finca</label>
                     <select wire:model="rol" id="rol" class="reg-select">
                         <option value="">-- Selecciona un rol --</option>
-                        @foreach(\Spatie\Permission\Models\Role::whereNotIn('name', ['propietario', 'administrador'])->get() as $role)
+                       @foreach(\Spatie\Permission\Models\Role::whereNotIn('name', ['super admin', 'administrador'])->get() as $role)
                             <option value="{{ $role->name }}">{{ ucfirst($role->name) }}</option>
                         @endforeach
                     </select>

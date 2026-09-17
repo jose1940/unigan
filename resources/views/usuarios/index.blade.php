@@ -44,7 +44,7 @@
                                         <a href="{{ route('usuarios.edit', $usuario->id) }}"
                                            class="text-blue-600 hover:underline">Editar</a>
                                     @endcan
-                                    @role('propietario')
+                                    @role('super_admin')
                                         <form method="POST" action="{{ route('usuarios.destroy', $usuario->id) }}">
                                             @csrf @method('DELETE')
                                             <button type="submit"
