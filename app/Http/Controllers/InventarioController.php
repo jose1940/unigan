@@ -99,8 +99,8 @@ class InventarioController extends Controller
 
     public function destroy(string $id)
     {
-        if (!auth()->user()->hasRole('super admin')) {
-            abort(403, 'Solo el super admin puede eliminar ítems del inventario.');
+        if (!auth()->user()->hasRole(['super admin', 'administrador'])) {
+            abort(403, 'No tienes permiso para eliminar ítems del inventario.');
         }
 
         $item = Inventario::findOrFail($id);

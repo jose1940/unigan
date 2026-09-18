@@ -124,6 +124,12 @@ new class extends Component {
     <div class="reg-right">
         <div style="width:100%; max-width:400px;">
 
+            <div style="margin-bottom: 1.25rem;">
+                <a href="{{ url('/') }}" style="display: inline-flex; align-items: center; gap: 6px; color: #9ca3af; text-decoration: none; font-size: 13px; font-weight: 600; transition: color 0.2s;" onmouseover="this.style.color='#ffffff';" onmouseout="this.style.color='#9ca3af';">
+                    ← Volver al Inicio
+                </a>
+            </div>
+
             <div style="text-align:center; margin-bottom:1.75rem;">
                 <div style="font-size:36px; margin-bottom:0.5rem;">🌿</div>
                 <h2 style="font-size:24px; font-weight:800; color:#fff; margin:0 0 0.25rem;">Crear cuenta</h2>

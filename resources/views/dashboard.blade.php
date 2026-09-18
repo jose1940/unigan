@@ -1,13 +1,21 @@
 <x-app-layout>
     <x-slot name="header">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
-                <h2 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin: 0;">
-                    Panel de Control
-                </h2>
-                <p style="font-size: 13px; color: #64748b; margin: 2px 0 0 0;">
-                    Bienvenido, <strong style="color: #1e293b;">{{ auth()->user()->name }}</strong>
-                </p>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <a href="{{ url('/') }}"
+                   style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 10px; background: #ffffff; border: 1px solid #cbd5e1; color: #475569; font-weight: 600; font-size: 13px; text-decoration: none; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: all 0.2s;"
+                   onmouseover="this.style.background='#f1f5f9'; this.style.color='#1e293b';"
+                   onmouseout="this.style.background='#ffffff'; this.style.color='#475569';">
+                    ← Ir al Inicio
+                </a>
+                <div>
+                    <h2 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin: 0;">
+                        Panel de Control
+                    </h2>
+                    <p style="font-size: 13px; color: #64748b; margin: 2px 0 0 0;">
+                        Bienvenido, <strong style="color: #1e293b;">{{ auth()->user()->name }}</strong>
+                    </p>
+                </div>
             </div>
             <span style="background-color: #e2e8f0; color: #334155; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px; text-transform: uppercase;">
                 Rol: {{ ucfirst(auth()->user()->getRoleNames()->first() ?? 'Administrador') }}
