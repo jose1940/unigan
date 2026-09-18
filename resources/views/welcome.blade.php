@@ -604,7 +604,7 @@
                     <div class="feature-icon-wrapper" style="background: #fef3c7; color: #d97706;">
                         📦
                     </div>
-                    <h3 class="feature-title">Inventario de Insumos</h3>
+                    <h3 class="feature-title">Reportes de Insumos</h3>
                     <p class="feature-text">
                         Control de alimentos, medicamentos y materiales con semáforo inteligente de fechas de vencimiento y alertas de stock.
                     </p>

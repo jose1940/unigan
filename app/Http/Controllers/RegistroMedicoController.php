@@ -102,7 +102,7 @@ class RegistroMedicoController extends Controller
 
     public function destroy(string $id)
     {
-        if (!auth()->user()->hasRole('super admin||veterinario')) {
+        if (!auth()->user()->hasRole('super_admin|administrador|veterinario')) {
             abort(403, 'No tienes permiso para eliminar registros médicos.');
         }
 
