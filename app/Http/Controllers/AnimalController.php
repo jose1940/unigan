@@ -32,23 +32,36 @@ class AnimalController extends Controller
         }
 
         $request->validate([
-            'numero_arete'     => 'nullable|string',
+            'especie'          => 'required|string',
+            'numero_arete'     => 'nullable|string|max:50|unique:animals,numero_arete',
+            'nombre'           => 'nullable|string|max:100',
             'peso'             => 'nullable|numeric|min:0',
             'fecha_nacimiento' => 'nullable|date|before_or_equal:today',
             'fecha_compra'     => 'nullable|date',
+        ], [
+            'especie.required'                 => 'Debes seleccionar la especie del animal.',
+            'numero_arete.unique'              => 'El número de arete ya está registrado en otro animal. Por favor utiliza uno diferente.',
+            'fecha_nacimiento.before_or_equal' => 'La fecha de nacimiento no puede ser posterior a hoy.',
+            'peso.min'                         => 'El peso no puede ser negativo.',
         ]);
 
-        Animal::create([
-            'numero_arete'     => $request->numero_arete,
-            'nombre'           => $request->nombre,
-            'especie'          => $request->especie,
-            'peso'             => $request->peso,
-            'fecha_nacimiento' => $request->fecha_nacimiento,
-            'fecha_compra'     => $request->fecha_compra,
-        ]);
+        try {
+            Animal::create([
+                'numero_arete'     => $request->numero_arete,
+                'nombre'           => $request->nombre,
+                'especie'          => $request->especie,
+                'peso'             => $request->peso,
+                'fecha_nacimiento' => $request->fecha_nacimiento,
+                'fecha_compra'     => $request->fecha_compra,
+            ]);
 
-        return redirect()->route('animales.index')
-            ->with('success', 'Animal registrado correctamente.');
+            return redirect()->route('animales.index')
+                ->with('success', 'Animal registrado correctamente.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['general' => 'Ocurrió un error al guardar el registro: ' . $e->getMessage()]);
+        }
     }
 
     public function show(string $id)
@@ -70,24 +83,37 @@ class AnimalController extends Controller
         }
 
         $request->validate([
-            'numero_arete'     => 'nullable|string',
+            'especie'          => 'required|string',
+            'numero_arete'     => 'nullable|string|max:50|unique:animals,numero_arete,' . $id,
+            'nombre'           => 'nullable|string|max:100',
             'peso'             => 'nullable|numeric|min:0',
             'fecha_nacimiento' => 'nullable|date|before_or_equal:today',
             'fecha_compra'     => 'nullable|date',
+        ], [
+            'especie.required'                 => 'Debes seleccionar la especie del animal.',
+            'numero_arete.unique'              => 'El número de arete ya está registrado en otro animal. Por favor utiliza uno diferente.',
+            'fecha_nacimiento.before_or_equal' => 'La fecha de nacimiento no puede ser posterior a hoy.',
+            'peso.min'                         => 'El peso no puede ser negativo.',
         ]);
 
-        $animal = Animal::findOrFail($id);
-        $animal->update([
-            'numero_arete'     => $request->numero_arete,
-            'nombre'           => $request->nombre,
-            'especie'          => $request->especie,
-            'peso'             => $request->peso,
-            'fecha_nacimiento' => $request->fecha_nacimiento,
-            'fecha_compra'     => $request->fecha_compra,
-        ]);
+        try {
+            $animal = Animal::findOrFail($id);
+            $animal->update([
+                'numero_arete'     => $request->numero_arete,
+                'nombre'           => $request->nombre,
+                'especie'          => $request->especie,
+                'peso'             => $request->peso,
+                'fecha_nacimiento' => $request->fecha_nacimiento,
+                'fecha_compra'     => $request->fecha_compra,
+            ]);
 
-        return redirect()->route('animales.index')
-            ->with('success', 'Animal actualizado correctamente.');
+            return redirect()->route('animales.index')
+                ->with('success', 'Animal actualizado correctamente.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['general' => 'Ocurrió un error al actualizar el registro: ' . $e->getMessage()]);
+        }
     }
 
     public function destroy(string $id)

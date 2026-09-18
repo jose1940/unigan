@@ -25,8 +25,14 @@
         <div style="max-width: 1280px; margin: 0 auto; padding: 0 1.5rem;">
 
             @if(session('success'))
-                <div style="background-color: #d1fae5; color: #065f46; padding: 12px 16px; border-radius: 10px; margin-bottom: 1.5rem; font-size: 14px; font-weight: 600;">
-                    {{ session('success') }}
+                <div style="background-color: #d1fae5; color: #065f46; padding: 12px 16px; border-radius: 10px; margin-bottom: 1.5rem; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                    <span>✅</span> <span>{{ session('success') }}</span>
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div style="background-color: #fee2e2; color: #991b1b; padding: 12px 16px; border-radius: 10px; margin-bottom: 1.5rem; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                    <span>⚠️</span> <span>{{ session('error') }}</span>
                 </div>
             @endif
 
@@ -58,7 +64,7 @@
                                     <td style="padding: 14px 16px;">{{ $animal->especie }}</td>
                                     <td style="padding: 14px 16px;">
                                         @if($animal->peso)
-                                            <span style="font-weight: 600; color: #0f172a;">{{ $animal->peso }} kg</span>
+                                             <span style="font-weight: 600; color: #0f172a;">{{ $animal->peso }} kg</span>
                                         @else
                                             <span style="color: #94a3b8;">—</span>
                                         @endif
@@ -89,20 +95,20 @@
                                         {{ $animal->fecha_compra ? \Carbon\Carbon::parse($animal->fecha_compra)->format('d/m/Y') : '—' }}
                                     </td>
                                     <td style="padding: 14px 16px; text-align: center;">
-                                       <div style="display: flex; justify-content: center; gap: 8px;">
-    @can('editar animales')
-    <button onclick="abrirModalEditar('{{ $animal->id }}', '{{ $animal->numero_arete }}', '{{ $animal->nombre }}', '{{ $animal->especie }}', '{{ $animal->peso }}', '{{ $animal->fecha_nacimiento }}', '{{ $animal->fecha_compra }}')"
-            title="Editar" style="background: #e0f2fe; color: #0284c7; border: none; padding: 6px 10px; border-radius: 8px; cursor: pointer;">
-        ✏️
-    </button>
-    @endcan
-    @can('eliminar animales')
-    <button onclick="abrirModalEliminar('{{ $animal->id }}', '{{ $animal->numero_arete }}')"
-            title="Eliminar" style="background: #fee2e2; color: #dc2626; border: none; padding: 6px 10px; border-radius: 8px; cursor: pointer;">
-        🗑️
-    </button>
-    @endcan
-</div>
+                                        <div style="display: flex; justify-content: center; gap: 8px;">
+                                            @can('editar animales')
+                                            <button onclick="abrirModalEditar('{{ $animal->id }}', '{{ $animal->numero_arete }}', '{{ addslashes($animal->nombre ?? '') }}', '{{ $animal->especie }}', '{{ $animal->peso }}', '{{ $animal->fecha_nacimiento }}', '{{ $animal->fecha_compra }}')"
+                                                    title="Editar" style="background: #e0f2fe; color: #0284c7; border: none; padding: 6px 10px; border-radius: 8px; cursor: pointer;">
+                                                ✏️
+                                            </button>
+                                            @endcan
+                                            @can('eliminar animales')
+                                            <button onclick="abrirModalEliminar('{{ $animal->id }}', '{{ $animal->numero_arete }}')"
+                                                    title="Eliminar" style="background: #fee2e2; color: #dc2626; border: none; padding: 6px 10px; border-radius: 8px; cursor: pointer;">
+                                                🗑️
+                                            </button>
+                                            @endcan
+                                        </div>
                                     </td>
                                 </tr>
                             @empty
@@ -124,62 +130,113 @@
         <div style="background: #ffffff; width: 100%; max-width: 480px; border-radius: 20px; padding: 1.5rem; max-height: 90vh; overflow-y: auto;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
                 <h3 style="margin: 0; font-size: 18px; font-weight: 800; color: #0f172a;">🐄 Registrar Animal</h3>
-                <button onclick="document.getElementById('modalCrear').style.display='none'" style="background: transparent; border: none; font-size: 20px; cursor: pointer;">✕</button>
+                <button onclick="document.getElementById('modalCrear').style.display='none'" style="background: transparent; border: none; font-size: 20px; cursor: pointer; color: #64748b;">✕</button>
             </div>
+
+            @if($errors->any() && old('_method') !== 'PUT')
+                <div style="background-color: #fee2e2; border-left: 4px solid #ef4444; color: #991b1b; padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 1rem;">
+                    <div style="font-weight: 700; margin-bottom: 3px; display: flex; align-items: center; gap: 6px;">
+                        <span>⚠️</span> <span>Corrige los siguientes campos:</span>
+                    </div>
+                    <ul style="margin: 0; padding-left: 1.25rem; font-size: 12px;">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <form method="POST" action="{{ route('animales.store') }}" style="display: flex; flex-direction: column; gap: 1rem;">
                 @csrf
 
                 {{-- 1. Especie primero --}}
                 <div>
-                    <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px;">Especie</label>
+                    <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px;">
+                        Especie <span style="color: #ef4444;">*</span>
+                    </label>
                     <select name="especie" id="crear_especie" onchange="toggleArete('crear')"
-                            style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none;">
+                            style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid {{ ($errors->has('especie') && old('_method') !== 'PUT') ? '#ef4444' : '#cbd5e1' }}; outline: none;">
                         <option value="">-- Selecciona la especie --</option>
-                        <option value="Bovino">Bovino</option>
-                        <option value="Equino">Equino</option>
-                        <option value="Porcino">Porcino</option>
+                        <option value="Bovino" {{ old('especie') == 'Bovino' ? 'selected' : '' }}>Bovino</option>
+                        <option value="Equino" {{ old('especie') == 'Equino' ? 'selected' : '' }}>Equino</option>
+                        <option value="Porcino" {{ old('especie') == 'Porcino' ? 'selected' : '' }}>Porcino</option>
                     </select>
+                    @if(old('_method') !== 'PUT')
+                        @error('especie')
+                            <span style="color: #ef4444; font-size: 12px; font-weight: 600; display: block; margin-top: 4px;">{{ $message }}</span>
+                        @enderror
+                    @endif
                 </div>
 
                 {{-- 2. Arete solo para Bovino y Porcino --}}
                 <div id="crear_arete_campo" style="display: none;">
                     <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px;">
-                        Número de Arete <span style="color:#94a3b8; font-weight:400;">(opcional)</span>
+                        Número de Arete <span style="color:#94a3b8; font-weight:400;">(opcional, único)</span>
                     </label>
                     <input type="text" name="numero_arete" id="crear_numero_arete"
+                           value="{{ old('_method') !== 'PUT' ? old('numero_arete') : '' }}"
                            placeholder="Ej: 07, 123..."
-                           style="width: 100%; box-sizing: border-box; padding: 10px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none;">
+                           style="width: 100%; box-sizing: border-box; padding: 10px; border-radius: 10px; border: 1px solid {{ ($errors->has('numero_arete') && old('_method') !== 'PUT') ? '#ef4444' : '#cbd5e1' }}; outline: none;">
+                    @if(old('_method') !== 'PUT')
+                        @error('numero_arete')
+                            <span style="color: #ef4444; font-size: 12px; font-weight: 600; display: block; margin-top: 4px;">{{ $message }}</span>
+                        @enderror
+                    @endif
                 </div>
 
                 {{-- 3. Nombre --}}
                 <div>
                     <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px;">Nombre</label>
-                    <input type="text" name="nombre"
-                           style="width: 100%; box-sizing: border-box; padding: 10px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none;">
+                    <input type="text" name="nombre" value="{{ old('_method') !== 'PUT' ? old('nombre') : '' }}"
+                           placeholder="Ej: Lucero, Campeón..."
+                           style="width: 100%; box-sizing: border-box; padding: 10px; border-radius: 10px; border: 1px solid {{ ($errors->has('nombre') && old('_method') !== 'PUT') ? '#ef4444' : '#cbd5e1' }}; outline: none;">
+                    @if(old('_method') !== 'PUT')
+                        @error('nombre')
+                            <span style="color: #ef4444; font-size: 12px; font-weight: 600; display: block; margin-top: 4px;">{{ $message }}</span>
+                        @enderror
+                    @endif
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                     <div>
                         <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px;">⚖️ Peso (kg)</label>
                         <input type="number" name="peso" min="0" step="0.1" placeholder="Ej: 350.5"
-                               style="width: 100%; box-sizing: border-box; padding: 10px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none;">
+                               value="{{ old('_method') !== 'PUT' ? old('peso') : '' }}"
+                               style="width: 100%; box-sizing: border-box; padding: 10px; border-radius: 10px; border: 1px solid {{ ($errors->has('peso') && old('_method') !== 'PUT') ? '#ef4444' : '#cbd5e1' }}; outline: none;">
+                        @if(old('_method') !== 'PUT')
+                            @error('peso')
+                                <span style="color: #ef4444; font-size: 12px; font-weight: 600; display: block; margin-top: 4px;">{{ $message }}</span>
+                            @enderror
+                        @endif
                     </div>
                     <div>
-                        <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px;">🎂 Fecha de Nacimiento</label>
+                        <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px;">🎂 Fecha Nacimiento</label>
                         <input type="date" name="fecha_nacimiento"
-                               style="width: 100%; box-sizing: border-box; padding: 10px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none;">
+                               value="{{ old('_method') !== 'PUT' ? old('fecha_nacimiento') : '' }}"
+                               style="width: 100%; box-sizing: border-box; padding: 10px; border-radius: 10px; border: 1px solid {{ ($errors->has('fecha_nacimiento') && old('_method') !== 'PUT') ? '#ef4444' : '#cbd5e1' }}; outline: none;">
+                        @if(old('_method') !== 'PUT')
+                            @error('fecha_nacimiento')
+                                <span style="color: #ef4444; font-size: 12px; font-weight: 600; display: block; margin-top: 4px;">{{ $message }}</span>
+                            @enderror
+                        @endif
                     </div>
                 </div>
 
                 <div>
                     <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px;">🛒 Fecha de Compra</label>
                     <input type="date" name="fecha_compra"
-                           style="width: 100%; box-sizing: border-box; padding: 10px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none;">
+                           value="{{ old('_method') !== 'PUT' ? old('fecha_compra') : '' }}"
+                           style="width: 100%; box-sizing: border-box; padding: 10px; border-radius: 10px; border: 1px solid {{ ($errors->has('fecha_compra') && old('_method') !== 'PUT') ? '#ef4444' : '#cbd5e1' }}; outline: none;">
+                    @if(old('_method') !== 'PUT')
+                        @error('fecha_compra')
+                            <span style="color: #ef4444; font-size: 12px; font-weight: 600; display: block; margin-top: 4px;">{{ $message }}</span>
+                        @enderror
+                    @endif
                 </div>
 
                 <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 0.5rem;">
                     <button type="button" onclick="document.getElementById('modalCrear').style.display='none'"
-                            style="padding: 10px 16px; border-radius: 10px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer;">Cancelar</button>
+                            style="padding: 10px 16px; border-radius: 10px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; font-weight: 600; color: #475569;">Cancelar</button>
                     <button type="submit"
                             style="padding: 10px 20px; border-radius: 10px; border: none; background: #2e7d32; color: #fff; font-weight: 700; cursor: pointer;">Guardar</button>
                 </div>
@@ -192,61 +249,108 @@
         <div style="background: #ffffff; width: 100%; max-width: 480px; border-radius: 20px; padding: 1.5rem; max-height: 90vh; overflow-y: auto;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
                 <h3 style="margin: 0; font-size: 18px; font-weight: 800; color: #0f172a;">✏️ Editar Animal</h3>
-                <button onclick="document.getElementById('modalEditar').style.display='none'" style="background: transparent; border: none; font-size: 20px; cursor: pointer;">✕</button>
+                <button onclick="document.getElementById('modalEditar').style.display='none'" style="background: transparent; border: none; font-size: 20px; cursor: pointer; color: #64748b;">✕</button>
             </div>
+
+            @if($errors->any() && old('_method') === 'PUT')
+                <div style="background-color: #fee2e2; border-left: 4px solid #ef4444; color: #991b1b; padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 1rem;">
+                    <div style="font-weight: 700; margin-bottom: 3px; display: flex; align-items: center; gap: 6px;">
+                        <span>⚠️</span> <span>Corrige los siguientes campos:</span>
+                    </div>
+                    <ul style="margin: 0; padding-left: 1.25rem; font-size: 12px;">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <form id="formEditar" method="POST" action="" style="display: flex; flex-direction: column; gap: 1rem;">
                 @csrf
                 @method('PUT')
+                <input type="hidden" name="edit_id" id="edit_id" value="{{ old('edit_id') }}">
 
                 {{-- 1. Especie primero --}}
                 <div>
-                    <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px;">Especie</label>
+                    <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px;">
+                        Especie <span style="color: #ef4444;">*</span>
+                    </label>
                     <select id="edit_especie" name="especie" onchange="toggleArete('edit')"
-                            style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none;">
+                            style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid {{ ($errors->has('especie') && old('_method') === 'PUT') ? '#ef4444' : '#cbd5e1' }}; outline: none;">
                         <option value="Bovino">Bovino</option>
                         <option value="Equino">Equino</option>
                         <option value="Porcino">Porcino</option>
                     </select>
+                    @if(old('_method') === 'PUT')
+                        @error('especie')
+                            <span style="color: #ef4444; font-size: 12px; font-weight: 600; display: block; margin-top: 4px;">{{ $message }}</span>
+                        @enderror
+                    @endif
                 </div>
 
                 {{-- 2. Arete solo para Bovino y Porcino --}}
                 <div id="edit_arete_campo" style="display: none;">
                     <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px;">
-                        Número de Arete <span style="color:#94a3b8; font-weight:400;">(opcional)</span>
+                        Número de Arete <span style="color:#94a3b8; font-weight:400;">(opcional, único)</span>
                     </label>
                     <input type="text" id="edit_numero_arete" name="numero_arete"
-                           style="width: 100%; box-sizing: border-box; padding: 10px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none;">
+                           style="width: 100%; box-sizing: border-box; padding: 10px; border-radius: 10px; border: 1px solid {{ ($errors->has('numero_arete') && old('_method') === 'PUT') ? '#ef4444' : '#cbd5e1' }}; outline: none;">
+                    @if(old('_method') === 'PUT')
+                        @error('numero_arete')
+                            <span style="color: #ef4444; font-size: 12px; font-weight: 600; display: block; margin-top: 4px;">{{ $message }}</span>
+                        @enderror
+                    @endif
                 </div>
 
                 {{-- 3. Nombre --}}
                 <div>
                     <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px;">Nombre</label>
                     <input type="text" id="edit_nombre" name="nombre"
-                           style="width: 100%; box-sizing: border-box; padding: 10px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none;">
+                           style="width: 100%; box-sizing: border-box; padding: 10px; border-radius: 10px; border: 1px solid {{ ($errors->has('nombre') && old('_method') === 'PUT') ? '#ef4444' : '#cbd5e1' }}; outline: none;">
+                    @if(old('_method') === 'PUT')
+                        @error('nombre')
+                            <span style="color: #ef4444; font-size: 12px; font-weight: 600; display: block; margin-top: 4px;">{{ $message }}</span>
+                        @enderror
+                    @endif
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                     <div>
                         <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px;">⚖️ Peso (kg)</label>
                         <input type="number" id="edit_peso" name="peso" min="0" step="0.1"
-                               style="width: 100%; box-sizing: border-box; padding: 10px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none;">
+                               style="width: 100%; box-sizing: border-box; padding: 10px; border-radius: 10px; border: 1px solid {{ ($errors->has('peso') && old('_method') === 'PUT') ? '#ef4444' : '#cbd5e1' }}; outline: none;">
+                        @if(old('_method') === 'PUT')
+                            @error('peso')
+                                <span style="color: #ef4444; font-size: 12px; font-weight: 600; display: block; margin-top: 4px;">{{ $message }}</span>
+                            @enderror
+                        @endif
                     </div>
                     <div>
-                        <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px;">🎂 Fecha de Nacimiento</label>
+                        <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px;">🎂 Fecha Nacimiento</label>
                         <input type="date" id="edit_fecha_nacimiento" name="fecha_nacimiento"
-                               style="width: 100%; box-sizing: border-box; padding: 10px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none;">
+                               style="width: 100%; box-sizing: border-box; padding: 10px; border-radius: 10px; border: 1px solid {{ ($errors->has('fecha_nacimiento') && old('_method') === 'PUT') ? '#ef4444' : '#cbd5e1' }}; outline: none;">
+                        @if(old('_method') === 'PUT')
+                            @error('fecha_nacimiento')
+                                <span style="color: #ef4444; font-size: 12px; font-weight: 600; display: block; margin-top: 4px;">{{ $message }}</span>
+                            @enderror
+                        @endif
                     </div>
                 </div>
 
                 <div>
                     <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px;">🛒 Fecha de Compra</label>
                     <input type="date" id="edit_fecha_compra" name="fecha_compra"
-                           style="width: 100%; box-sizing: border-box; padding: 10px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none;">
+                           style="width: 100%; box-sizing: border-box; padding: 10px; border-radius: 10px; border: 1px solid {{ ($errors->has('fecha_compra') && old('_method') === 'PUT') ? '#ef4444' : '#cbd5e1' }}; outline: none;">
+                    @if(old('_method') === 'PUT')
+                        @error('fecha_compra')
+                            <span style="color: #ef4444; font-size: 12px; font-weight: 600; display: block; margin-top: 4px;">{{ $message }}</span>
+                        @enderror
+                    @endif
                 </div>
 
                 <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 0.5rem;">
                     <button type="button" onclick="document.getElementById('modalEditar').style.display='none'"
-                            style="padding: 10px 16px; border-radius: 10px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer;">Cancelar</button>
+                            style="padding: 10px 16px; border-radius: 10px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; font-weight: 600; color: #475569;">Cancelar</button>
                     <button type="submit"
                             style="padding: 10px 20px; border-radius: 10px; border: none; background: #0284c7; color: #fff; font-weight: 700; cursor: pointer;">Actualizar</button>
                 </div>
@@ -265,7 +369,7 @@
                 @method('DELETE')
                 <div style="display: flex; justify-content: center; gap: 10px;">
                     <button type="button" onclick="document.getElementById('modalEliminar').style.display='none'"
-                            style="padding: 10px 16px; border-radius: 10px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer;">Cancelar</button>
+                            style="padding: 10px 16px; border-radius: 10px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; font-weight: 600; color: #475569;">Cancelar</button>
                     <button type="submit"
                             style="padding: 10px 20px; border-radius: 10px; border: none; background: #dc2626; color: #fff; font-weight: 700; cursor: pointer;">Sí, Eliminar</button>
                 </div>
@@ -275,7 +379,9 @@
 
     <script>
         function toggleArete(modal) {
-            const especie = document.getElementById(modal + '_especie').value;
+            const especieEl = document.getElementById(modal + '_especie');
+            if (!especieEl) return;
+            const especie = especieEl.value;
             const campo = document.getElementById(modal + '_arete_campo');
             const input = document.getElementById(modal + '_numero_arete');
 
@@ -283,26 +389,54 @@
                 campo.style.display = 'block';
             } else {
                 campo.style.display = 'none';
-                if (input) input.value = '';
+                if (input && modal === 'crear') {
+                    // Only clear on species switch if user hasn't explicitly filled it or if switching to Equino
+                    // input.value = '';
+                }
             }
         }
 
         function abrirModalEditar(id, arete, nombre, especie, peso, fechaNacimiento, fechaCompra) {
             document.getElementById('formEditar').action = `/animales/${id}`;
+            document.getElementById('edit_id').value = id;
             document.getElementById('edit_especie').value = especie;
-            document.getElementById('edit_nombre').value = nombre;
-            document.getElementById('edit_peso').value = peso;
-            document.getElementById('edit_fecha_nacimiento').value = fechaNacimiento;
-            document.getElementById('edit_fecha_compra').value = fechaCompra;
+            document.getElementById('edit_nombre').value = nombre || '';
+            document.getElementById('edit_peso').value = peso || '';
+            document.getElementById('edit_fecha_nacimiento').value = fechaNacimiento || '';
+            document.getElementById('edit_fecha_compra').value = fechaCompra || '';
             toggleArete('edit');
-            document.getElementById('edit_numero_arete').value = arete;
+            document.getElementById('edit_numero_arete').value = arete || '';
             document.getElementById('modalEditar').style.display = 'flex';
         }
 
         function abrirModalEliminar(id, arete) {
             document.getElementById('formEliminar').action = `/animales/${id}`;
-            document.getElementById('textoEliminar').innerText = `¿Estás seguro de eliminar el animal con arete #${arete}?`;
+            document.getElementById('textoEliminar').innerText = arete ? `¿Estás seguro de eliminar el animal con arete #${arete}?` : `¿Estás seguro de eliminar este animal?`;
             document.getElementById('modalEliminar').style.display = 'flex';
         }
+
+        // Si la validación falla tras enviar el formulario, reabrir el modal correspondiente y restaurar el estado
+        document.addEventListener('DOMContentLoaded', function() {
+            @if ($errors->any())
+                @if (old('_method') === 'PUT')
+                    const editId = "{{ old('edit_id') }}";
+                    if (editId) {
+                        document.getElementById('formEditar').action = `/animales/${editId}`;
+                        document.getElementById('edit_id').value = editId;
+                        document.getElementById('edit_especie').value = "{{ old('especie') }}";
+                        document.getElementById('edit_nombre').value = "{{ addslashes(old('nombre', '')) }}";
+                        document.getElementById('edit_peso').value = "{{ old('peso') }}";
+                        document.getElementById('edit_fecha_nacimiento').value = "{{ old('fecha_nacimiento') }}";
+                        document.getElementById('edit_fecha_compra').value = "{{ old('fecha_compra') }}";
+                        toggleArete('edit');
+                        document.getElementById('edit_numero_arete').value = "{{ old('numero_arete') }}";
+                        document.getElementById('modalEditar').style.display = 'flex';
+                    }
+                @else
+                    toggleArete('crear');
+                    document.getElementById('modalCrear').style.display = 'flex';
+                @endif
+            @endif
+        });
     </script>
 </x-app-layout>
